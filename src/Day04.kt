@@ -3,27 +3,15 @@ import kotlin.math.min
 
 fun main() {
     fun isCompassing(low1: Int, high1: Int, low2: Int, high2: Int): Boolean {
-        if (low1 <= low2 && high1 >= high2) {
-            return true;
-        }
-
-        if (low2 <= low1 && high2 >= high1) {
-            return true;
-        }
-
-        return false;
+        return (low1 <= low2 && high1 >= high2) || (low2 <= low1 && high2 >= high1)
     }
 
     fun part1(input: List<String>): Int {
-        return input.sumOf {
+        return input.count {
             val (firstRange, secondRange) = it.split(",")
-            val (low1, high1) = firstRange.split("-")
-            val (low2, high2) = secondRange.split("-")
-            if (isCompassing(low1.toInt(), high1.toInt(), low2.toInt(), high2.toInt())) {
-                1 as Int
-            } else {
-                0 as Int
-            }
+            val (low1, high1) = firstRange.split("-").map { s -> s.toInt() }
+            val (low2, high2) = secondRange.split("-").map { s -> s.toInt() }
+            isCompassing(low1, high1, low2, high2)
         }
     }
 
@@ -36,9 +24,9 @@ fun main() {
     fun part2(input: List<String>): Int {
         return input.count {
             val (firstRange, secondRange) = it.split(",")
-            val (low1, high1) = firstRange.split("-")
-            val (low2, high2) = secondRange.split("-")
-            isCompassingPart2(low1.toInt(), high1.toInt(), low2.toInt(), high2.toInt())
+            val (low1, high1) = firstRange.split("-").map { s -> s.toInt() }
+            val (low2, high2) = secondRange.split("-").map { s -> s.toInt() }
+            isCompassingPart2(low1, high1, low2, high2)
         }
     }
 
