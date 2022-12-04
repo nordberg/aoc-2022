@@ -34,15 +34,11 @@ fun main() {
     }
 
     fun part2(input: List<String>): Int {
-        return input.sumOf {
+        return input.count {
             val (firstRange, secondRange) = it.split(",")
             val (low1, high1) = firstRange.split("-")
             val (low2, high2) = secondRange.split("-")
-            if (isCompassingPart2(low1.toInt(), high1.toInt(), low2.toInt(), high2.toInt())) {
-                1 as Int
-            } else {
-                0 as Int
-            }
+            isCompassingPart2(low1.toInt(), high1.toInt(), low2.toInt(), high2.toInt())
         }
     }
 
