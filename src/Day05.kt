@@ -1,6 +1,3 @@
-import kotlin.math.max
-import kotlin.math.min
-
 fun main() {
     fun part1(input: List<String>): String {
 //        [P]     [L]         [T]
@@ -35,26 +32,24 @@ fun main() {
 
     fun part2(input: List<String>): String {
         val piles = mutableListOf(
-            mutableListOf('H', 'B', 'V', 'W', 'N', 'M', 'L', 'P'),
-            mutableListOf('M', 'Q', 'H'),
-            mutableListOf('N', 'D', 'B', 'G', 'F', 'Q', 'M', 'L'),
-            mutableListOf('Z', 'T', 'F', 'Q', 'M', 'W', 'G'),
-            mutableListOf('M', 'T', 'H', 'P'),
-            mutableListOf('C', 'B', 'M', 'J', 'D', 'H', 'G', 'T'),
-            mutableListOf('M', 'N', 'B', 'F', 'V', 'R'),
-            mutableListOf('P', 'L', 'H', 'M', 'R', 'G', 'S'),
-            mutableListOf('P', 'D', 'B', 'C', 'N')
+            listOf('H', 'B', 'V', 'W', 'N', 'M', 'L', 'P'),
+            listOf('M', 'Q', 'H'),
+            listOf('N', 'D', 'B', 'G', 'F', 'Q', 'M', 'L'),
+            listOf('Z', 'T', 'F', 'Q', 'M', 'W', 'G'),
+            listOf('M', 'T', 'H', 'P'),
+            listOf('C', 'B', 'M', 'J', 'D', 'H', 'G', 'T'),
+            listOf('M', 'N', 'B', 'F', 'V', 'R'),
+            listOf('P', 'L', 'H', 'M', 'R', 'G', 'S'),
+            listOf('P', 'D', 'B', 'C', 'N')
         )
 
         input.forEach {
             val (numToMove, fromPile, toPile) = it.split(";").map { z -> z.toInt() }
 
             val fromThis = piles[fromPile - 1]
-            val toThis = piles[toPile - 1]
 
-            val elementsToBeRemoved = fromThis.takeLast(numToMove)
-            toThis.addAll(elementsToBeRemoved)
-            piles[fromPile - 1] = fromThis.dropLast(numToMove).toMutableList()
+            piles[toPile - 1] += fromThis.takeLast(numToMove)
+            piles[fromPile - 1] = fromThis.dropLast(numToMove)
         }
 
         return piles.map { it.last() }.joinToString("")
