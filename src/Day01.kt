@@ -1,18 +1,14 @@
-import java.lang.Integer.parseInt
+import kotlin.math.max
 
 fun main() {
     fun part1(input: List<String>): Int {
-        var maxSoFar = Int.MIN_VALUE
-        var currentCounter = 0
-        input.forEach { s ->
-            if (s.isEmpty()) {
-                maxSoFar = maxSoFar.coerceAtLeast(currentCounter)
-                currentCounter = 0
+        return input.fold(Pair(Int.MIN_VALUE, 0)) { bestSoFarAndCurrent, currCalAsStr ->
+            if (currCalAsStr.isEmpty()) {
+                Pair(max(bestSoFarAndCurrent.first, bestSoFarAndCurrent.second), 0)
             } else {
-                currentCounter += s.toInt()
+                Pair(bestSoFarAndCurrent.first, bestSoFarAndCurrent.second + currCalAsStr.toInt())
             }
-        }
-        return maxSoFar
+        }.first
     }
 
     fun part2(input: List<String>): Int {
