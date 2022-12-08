@@ -4,20 +4,15 @@ enum class FileTypes {
 }
 
 fun main() {
-    data class AocFile(val name: String, val filePath: String, val size: Int?, val fileType: FileTypes) {
-        fun totalSize(fileConts: MutableMap<String, MutableSet<AocFile>>): Int {
-            return when (fileType) {
-                FileTypes.FILE -> size!!
-                FileTypes.DIRECTORY -> fileConts[filePath]!!.sumOf { it.totalSize(fileConts) }
-            }
-        }
-    }
+    data class AocFile(val name: String, val filePath: String, val size: Int?, val fileType: FileTypes)
 
     fun part1(input: List<String>): Int {
-        val dirTree = mutableMapOf<String, String>()
         val fileConts = mutableMapOf<String, MutableSet<AocFile>>()
+
         val dirsWithoutSize = mutableSetOf<AocFile>()
+
         var currentFilePath = "/"
+
         for (i in input.indices) {
             val currLine = input[i]
             if (currLine.startsWith("$ cd")) {
@@ -33,7 +28,10 @@ fun main() {
 
                     else -> {
                         val newDir = "$currentFilePath$targetDir/"
-                        dirTree[currentFilePath] = newDir
+                        val dirFile = AocFile(targetDir, newDir, null, FileTypes.DIRECTORY)
+                        fileConts.putIfAbsent(currentFilePath, mutableSetOf())
+                        fileConts[currentFilePath]!!.add(dirFile)
+                        dirsWithoutSize.add(dirFile)
                         newDir
                     }
                 }
@@ -41,36 +39,36 @@ fun main() {
 
             if (currLine.startsWith("dir ")) {
                 val (_, dirName) = currLine.split(" ")
-                val myFile = AocFile(dirName, "$currentFilePath$dirName", null, FileTypes.DIRECTORY)
+                val myFile = AocFile(dirName, "$currentFilePath$dirName/", null, FileTypes.DIRECTORY)
 
-                if (!fileConts.containsKey(currentFilePath)) {
-                    fileConts[currentFilePath] = mutableSetOf()
-                }
-
+                fileConts.putIfAbsent(currentFilePath, mutableSetOf())
                 fileConts[currentFilePath]!!.add(myFile)
+
                 dirsWithoutSize.add(myFile)
             }
 
             if (currLine[0].isDigit()) {
                 val (fileSize, fileName) = currLine.split(" ")
-                val myFile = AocFile(fileName, "$currentFilePath$fileName", fileSize.toInt(), FileTypes.FILE)
-
-                if (!fileConts.containsKey(currentFilePath)) {
-                    fileConts[currentFilePath] = mutableSetOf()
-                }
-
+                val myFile = AocFile(fileName, "$currentFilePath$fileName/", fileSize.toInt(), FileTypes.FILE)
+                fileConts.putIfAbsent(currentFilePath, mutableSetOf())
                 fileConts[currentFilePath]!!.add(myFile)
             }
         }
 
-        println(fileConts)
-
         val dirsWithSize = mutableSetOf<AocFile>()
 
         while (dirsWithoutSize.isNotEmpty()) {
+            val dirsPathsWithSize = dirsWithSize.map { it.filePath }.toSet()
             val dirsToRemove = mutableSetOf<AocFile>()
             for (d in dirsWithoutSize) {
-                val filesInDir = fileConts["${d.filePath}/"]!!
+                val filesInDir = fileConts[d.filePath]!!.map {
+                    if (it.filePath in dirsPathsWithSize) {
+                        dirsWithSize.first { d -> d.filePath == it.filePath }
+                    } else {
+                        it
+                    }
+                }
+
                 if (filesInDir.none { it.size == null }) {
                     dirsToRemove.add(d)
                     dirsWithSize.add(
@@ -79,11 +77,9 @@ fun main() {
                 }
             }
             dirsWithoutSize.removeAll(dirsToRemove)
-            break
         }
 
-
-        return 5
+        return dirsWithSize.filter { it.size!! <= 100000 }.sumOf { it.size!! }
     }
 
     fun part2(input: List<String>): Int {
