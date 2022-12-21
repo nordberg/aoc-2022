@@ -6,10 +6,12 @@ enum class FileTypes {
 fun main() {
     data class AocFile(val name: String, val filePath: String, val size: Int?, val fileType: FileTypes)
 
-    fun part1(input: List<String>): Int {
+    fun part1(input: List<String>): Set<AocFile> {
         val fileConts = mutableMapOf<String, MutableSet<AocFile>>()
 
-        val dirsWithoutSize = mutableSetOf<AocFile>()
+        val dirsWithoutSize = mutableSetOf(
+            AocFile("/", "/", null, FileTypes.DIRECTORY)
+        )
 
         var currentFilePath = "/"
 
@@ -79,11 +81,15 @@ fun main() {
             dirsWithoutSize.removeAll(dirsToRemove)
         }
 
-        return dirsWithSize.filter { it.size!! <= 100000 }.sumOf { it.size!! }
+        return dirsWithSize
     }
 
     fun part2(input: List<String>): Int {
-        return 5
+        val fileSystemSize = 70000000
+        val neededSpace = 30000000
+        val usedSpace = 50216456
+        val dirsWithSize = part1(input).sortedBy { it.size!! }
+        return dirsWithSize.first { (fileSystemSize - (usedSpace - it.size!!) >= neededSpace) }.size!!
     }
 
     // test if implementation meets criteria from the description, like:
@@ -91,6 +97,6 @@ fun main() {
     //check(part1(testInput) == 1)
 
     val input = readInput("Day07")
-    println(part1(input))
+    //println(part1(input).filter { it.size!! < 100000 }.sumOf { it.size!! })
     println(part2(input))
 }
