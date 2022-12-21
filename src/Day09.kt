@@ -94,6 +94,92 @@ data class Rope(val head: Point, val tail: Point) {
     }
 }
 
+
+data class RopePt2(val head: Point, val tail: List<Point>) {
+    fun wholeRope(): List<Point> {
+        return listOf(head) + tail
+    }
+
+    operator fun plus(move: Move): List<Rope> {
+//        if (tail.isEmpty()) {
+//            return listOf()
+//        }
+//        val newPositions = mutableListOf<Rope>()
+//        var updatingRope = this.copy()
+//        for (step in 1..move.steps) {
+//            val newHead = applyMoveToKnot(move.direction, updatingRope.head)
+//            val firstKnot = updatingRope.tail.first()
+//
+//            val headToTailDist = newHead.distanceTo(firstKnot)
+//            val tailNeedsToMove =
+//                ((headToTailDist > 1 && (newHead.x == firstKnot.x || newHead.y == firstKnot.y) || headToTailDist > 2))
+//            val newTail = if (tailNeedsToMove) {
+//                val dirToMove = Direction.values().reduce { acc, dir ->
+//                    val distIfMoveAcc = newHead.distanceTo(applyMoveToKnot(acc, firstKnot))
+//                    val distIfMoveDir = newHead.distanceTo(applyMoveToKnot(dir, updatingRope.tail))
+//                    val bestDiagonalMove = applyDiagonalMoves(updatingRope.tail, newHead)
+//                    val newPointIfBestDiagonalMove = applyMoveToKnot(bestDiagonalMove, updatingRope.tail)
+//                    val distIfBestDiagonal = newPointIfBestDiagonalMove.distanceTo(newHead)
+//
+//                    val listOfDists = listOf(distIfMoveAcc, distIfBestDiagonal, distIfMoveDir)
+//                    when (listOfDists.sorted().first { it > 0 }) {
+//                        distIfMoveAcc -> acc
+//                        distIfMoveDir -> dir
+//                        distIfBestDiagonal -> bestDiagonalMove
+//                        else -> throw IllegalStateException()
+//                    }
+//                }
+//                applyMoveToKnot(dirToMove, updatingRope.tail)
+//            } else {
+//                tail
+//            }
+//
+//            val tailRope = RopePt2(tail.first(), tail.drop(1)
+//
+//            //updatingRope = RopePt2(newHead, newTail)
+//            //newPositions.add(updatingRope)
+//            //println("Move was \n\t${move}, \nold rope was \n\t$this\n and new rope was \n\t$updatingRope")
+//        }
+//
+//        return newPositions
+        return emptyList()
+    }
+
+    private fun applyDiagonalMoves(point: Point, targetPoint: Point): Direction {
+        val validPairs = listOf(
+            Direction.UPLEFT,
+            Direction.DOWNLEFT,
+            Direction.DOWNRIGHT,
+            Direction.UPRIGHT
+        )
+
+        val directionMinimizingDistanceToTarget = validPairs.reduce { acc, it ->
+            val distAcc = applyMoveToKnot(acc, point).distanceTo(targetPoint)
+            val distIt = applyMoveToKnot(it, point).distanceTo(targetPoint)
+            if (distAcc < distIt) {
+                acc
+            } else {
+                it
+            }
+        }
+
+        return directionMinimizingDistanceToTarget
+    }
+
+    private fun applyMoveToKnot(direction: Direction, point: Point): Point {
+        return when (direction) {
+            Direction.UP -> Point(point.x, point.y - 1)
+            Direction.DOWN -> Point(point.x, point.y + 1)
+            Direction.LEFT -> Point(point.x - 1, point.y)
+            Direction.RIGHT -> Point(point.x + 1, point.y)
+            Direction.UPRIGHT -> Point(point.x + 1, point.y - 1)
+            Direction.DOWNRIGHT -> Point(point.x + 1, point.y + 1)
+            Direction.DOWNLEFT -> Point(point.x - 1, point.y + 1)
+            Direction.UPLEFT -> Point(point.x - 1, point.y - 1)
+        }
+    }
+}
+
 fun main() {
     fun part1(moves: List<Move>): Int {
         var currentPos = Rope(Point(0, 0), Point(0, 0))
@@ -107,8 +193,17 @@ fun main() {
         return visitedPointsOnMap.size
     }
 
-    fun part2(input: List<String>): Int {
-        return 4
+    fun part2(input: List<Move>): Int {
+//        val tailPoints = (1..9).map { Point(0, 0) }.toList()
+//        var currentPos = RopePt2(Point(0, 0), tailPoints)
+//        val visitedPointsOnMap = moves.flatMap {
+//            val newRopes = currentPos + it
+//            currentPos = TODO()
+//            newRopes.map { i -> i.tail }
+//        }.toSet() + setOf(Point(0, 0))
+//        println(visitedPointsOnMap.size)
+//        return visitedPointsOnMap.size
+        return 5
     }
 
 // test if implementation meets criteria from the description, like:
@@ -119,7 +214,7 @@ fun main() {
 
     val input = readInput("Day09")
     println(part1(parseMoves(input)))
-    println(part2(input))
+    println(part2(parseMoves(input)))
 }
 
 private fun parseMoves(input: List<String>): List<Move> {
